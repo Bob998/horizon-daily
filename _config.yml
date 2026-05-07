@@ -1,0 +1,24 @@
+theme: jekyll-theme-cayman
+title: Horizon Daily
+description: AI-curated daily digest of tech and research news
+baseurl: "/horizon-daily"
+url: "https://bob998.github.io"
+
+markdown: kramdown
+future: true
+plugins:
+  - jekyll-feed
+
+feed:
+  path: feed.xml
+
+exclude:
+  - ".github"
+  - "node_modules"
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "default"
