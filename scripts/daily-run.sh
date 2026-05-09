@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export PATH="/opt/homebrew/bin:/Users/bigo/.git-ai/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+UV_BIN="/opt/homebrew/bin/uv"
+GIT_BIN="/Users/bigo/.git-ai/bin/git"
+CURL_BIN="/usr/bin/curl"
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 LOG_DIR="$PROJECT_DIR/logs"
@@ -14,6 +20,20 @@ timestamp() {
 }
 
 echo "[$(timestamp)] Starting Horizon daily run..."
+echo "[$(timestamp)] PATH=$PATH"
+echo "[$(timestamp)] Using uv: $UV_BIN"
+echo "[$(timestamp)] Using git: $GIT_BIN"
+echo "[$(timestamp)] Using curl: $CURL_BIN"
+
+if [ ! -x "$UV_BIN" ]; then
+  echo "[$(timestamp)] ERROR: uv not executable: $UV_BIN"
+  exit 1
+fi
+
+if [ ! -x "$GIT_BIN" ]; then
+  echo "[$(timestamp)] ERROR: git not executable: $GIT_BIN"
+  exit 1
+fi
 
 cd "$PROJECT_DIR"
 
@@ -29,26 +49,26 @@ UPDATED=0
 
 # 1. Pull latest code
 echo "[$(timestamp)] Pulling latest code..."
-git pull --quiet origin main
+"$GIT_BIN" pull --quiet origin main
 
 # 2. Install/update dependencies
 echo "[$(timestamp)] Syncing dependencies..."
-uv sync --quiet
+"$UV_BIN" sync --quiet
 
 # 3. Run Horizon
 echo "[$(timestamp)] Running Horizon..."
-uv run horizon --hours 24
+"$UV_BIN" run horizon --hours 24
 
 # 4. Commit and push generated content only if changed
 echo "[$(timestamp)] Checking for changes..."
-git add -A
+"$GIT_BIN" add -A
 
-if git diff --cached --quiet; then
+if "$GIT_BIN" diff --cached --quiet; then
   echo "[$(timestamp)] No changes detected."
 else
   echo "[$(timestamp)] Changes detected, committing..."
-  git commit -m "daily update: $(date '+%Y-%m-%d %H:%M:%S')"
-  git push origin main
+  "$GIT_BIN" commit -m "daily update: $(date '+%Y-%m-%d %H:%M:%S')"
+  "$GIT_BIN" push origin main
   UPDATED=1
 fi
 
@@ -63,7 +83,7 @@ ${HORIZON_PAGES_URL}"
 ${HORIZON_PAGES_URL}"
   fi
 
-  curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  "$CURL_BIN" -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
     -d chat_id="${TELEGRAM_CHAT_ID}" \
     --data-urlencode "text=${MESSAGE}" >/dev/null || true
 else
