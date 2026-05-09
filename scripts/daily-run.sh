@@ -25,6 +25,8 @@ if [ -f "$PROJECT_DIR/.env" ]; then
   set +a
 fi
 
+UPDATED=0
+
 # 1. Pull latest code
 echo "[$(timestamp)] Pulling latest code..."
 git pull --quiet origin main
@@ -37,19 +39,33 @@ uv sync --quiet
 echo "[$(timestamp)] Running Horizon..."
 uv run horizon --hours 24
 
-# 4. Commit and push generated content if changed
-echo "[$(timestamp)] Committing updates..."
+# 4. Commit and push generated content only if changed
+echo "[$(timestamp)] Checking for changes..."
 git add -A
-git commit -m "daily update: $(date '+%Y-%m-%d')" || echo "[$(timestamp)] Nothing to commit."
-git push origin main
+
+if git diff --cached --quiet; then
+  echo "[$(timestamp)] No changes detected."
+else
+  echo "[$(timestamp)] Changes detected, committing..."
+  git commit -m "daily update: $(date '+%Y-%m-%d %H:%M:%S')"
+  git push origin main
+  UPDATED=1
+fi
 
 # 5. Telegram notify
 if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ] && [ -n "${HORIZON_PAGES_URL:-}" ]; then
   echo "[$(timestamp)] Sending Telegram notification..."
+  if [ "$UPDATED" -eq 1 ]; then
+    MESSAGE="✅ Horizon 已更新
+${HORIZON_PAGES_URL}"
+  else
+    MESSAGE="ℹ️ Horizon 无更新
+${HORIZON_PAGES_URL}"
+  fi
+
   curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
     -d chat_id="${TELEGRAM_CHAT_ID}" \
-    --data-urlencode "text=✅ Horizon 已更新
-${HORIZON_PAGES_URL}" >/dev/null || true
+    --data-urlencode "text=${MESSAGE}" >/dev/null || true
 else
   echo "[$(timestamp)] Telegram env vars not fully set, skipping notification."
 fi
