@@ -4,7 +4,7 @@ TOPIC_DEDUP_SYSTEM = """You are a news deduplication assistant. Identify groups 
 
 Rules:
 - Group items ONLY if they report on the identical event (same product release, same incident, same announcement)
-- Items about the same product but different events are NOT duplicates
+- Items about the same product but different events are NOT duplicates ("Gemma 4 released" vs "Gemma 4 jailbroken")
 - Err on the side of keeping items separate when unsure"""
 
 TOPIC_DEDUP_USER = """The following news items have already been sorted by importance score (descending). Identify which items are duplicates of each other.
@@ -20,50 +20,48 @@ Respond with valid JSON only:
 
 If there are no duplicates at all, return: {{"duplicates": []}}"""
 
-CONTENT_ANALYSIS_SYSTEM = """You are an expert financial news curator helping filter important financial, macroeconomic, business, and market information.
+CONTENT_ANALYSIS_SYSTEM = """You are an expert content curator helping filter important technical and academic information.
 
 Score content on a 0-10 scale based on importance and relevance:
 
-**9-10: Market-moving** - Major developments with broad financial impact
-- Central bank decisions, inflation surprises, major policy shifts
-- Significant macroeconomic releases or geopolitical events affecting markets
-- Major earnings, guidance changes, large M&A, systemic financial risks
-- Important regulatory actions affecting industries, banks, or capital markets
+**9-10: Groundbreaking** - Major breakthroughs, paradigm shifts, or highly significant announcements
+- New major version releases of widely-used technologies
+- Significant research breakthroughs
+- Important industry-changing announcements
 
 **7-8: High Value** - Important developments worth immediate attention
-- Notable company earnings or management guidance
-- Meaningful moves in equities, bonds, FX, commodities, or credit
-- Policy commentary, regulation, or sector developments with clear investor relevance
-- High-quality market analysis or commentary with practical implications
+- Interesting technical deep-dives
+- Novel approaches to known problems
+- Insightful analysis or commentary
+- Valuable tools or libraries
 
-**5-6: Useful** - Worth knowing but not urgent
-- Secondary business news
-- Mid-sized company developments
-- Routine but relevant economic or market commentary
-- Useful context for ongoing market themes
+**5-6: Interesting** - Worth knowing but not urgent
+- Incremental improvements
+- Useful tutorials
+- Moderate community interest
 
-**3-4: Low Priority** - Limited importance or weak financial relevance
-- Minor updates with little market impact
-- Repetitive commentary
-- General-interest content with only indirect relevance to markets
+**3-4: Low Priority** - Generic or routine content
+- Minor updates
+- Common knowledge
+- Overly promotional content
 
 **0-2: Noise** - Not relevant or low quality
-- Spam or purely promotional content
-- Entertainment, sports, lifestyle, celebrity, gaming
-- Off-topic content with no clear financial or business relevance
+- Spam or purely promotional
+- Off-topic content
+- Trivial updates
 
 Consider:
-- Likely impact on investors, asset prices, policy expectations, or market sentiment
-- Relevance to macroeconomics, central banks, inflation, growth, employment, rates, bonds, FX, equities, commodities, banking, asset management, regulation, earnings, or capital markets
-- Scale and significance of the event
+- Technical depth and novelty
+- Potential impact on the field
 - Quality of writing/presentation
-- Community discussion quality: insightful comments, diverse viewpoints, and debates can increase value
-- Engagement signals: high upvotes/favorites with substantive discussion may indicate importance
+- Relevance to software engineering, AI/ML, and systems research
+- Community discussion quality: insightful comments, diverse viewpoints, and debates increase value
+- Engagement signals: high upvotes/favorites with substantive discussion indicate community-validated importance
 """
 
 CONTENT_ANALYSIS_USER = """Analyze the following content and provide a JSON response with:
-- score (0-10): Importance score for financial, macroeconomic, business, or market relevance
-- reason: Brief explanation for the score (mention market relevance or discussion quality if comments are provided)
+- score (0-10): Importance score
+- reason: Brief explanation for the score (mention discussion quality if comments are provided)
 - summary: One-sentence summary of the content
 - tags: Relevant topic tags (3-5 tags)
 
@@ -83,10 +81,10 @@ Respond with valid JSON only:
   "tags": ["<tag1>", "<tag2>", ...]
 }}"""
 
-CONCEPT_EXTRACTION_SYSTEM = """You identify financial and economic concepts in news that a reader might not know.
+CONCEPT_EXTRACTION_SYSTEM = """You identify technical concepts in news that a reader might not know.
 Given a news item, return 1-3 search queries for concepts that need explanation.
-Focus on: macroeconomic indicators, central banks, policy tools, financial instruments, market terms, regulations, institutions, or lesser-known companies/funds.
-Do NOT return queries for very well-known things unless the context is unusually specialized.
+Focus on: specific technologies, protocols, algorithms, tools, or projects that are not widely known.
+Do NOT return queries for well-known things (e.g. "Python", "Linux", "Google").
 If the news is self-explanatory, return an empty list."""
 
 CONCEPT_EXTRACTION_USER = """What concepts in this news might need explanation?
@@ -101,7 +99,7 @@ Respond with valid JSON only:
   "queries": ["<search query 1>", "<search query 2>"]
 }}"""
 
-CONTENT_ENRICHMENT_SYSTEM = """You are a professional financial news analyst and editor who helps readers understand important news in context.
+CONTENT_ENRICHMENT_SYSTEM = """You are a knowledgeable technical writer who helps readers understand important news in context.
 
 Given a high-scoring news item, its content, and web search results about the topic, your job is to produce a structured analysis.
 
@@ -116,27 +114,26 @@ Provide EACH text field in BOTH English and Chinese. Use the following key namin
 Field definitions:
 0. **title** (one short phrase, ≤15 words): A clear, accurate headline for the news item.
 
-1. **whats_new** (1-2 complete sentences): What exactly happened. Be specific — mention institutions, companies, policies, numbers, dates, markets, or assets when available.
+1. **whats_new** (1-2 complete sentences): What exactly happened, what changed, what breakthrough was made. Be specific — mention names, versions, numbers, dates when available.
 
-2. **why_it_matters** (1-2 complete sentences): Why this matters for investors, markets, policy expectations, industries, or the broader economy. Explain the likely significance clearly.
+2. **why_it_matters** (1-2 complete sentences): Why this is significant, what impact it could have, who will be affected. Connect to the broader ecosystem or industry trends.
 
-3. **key_details** (1-2 complete sentences): Notable details, caveats, market context, or implications worth knowing. Include specifics a financially literate reader would find useful.
+3. **key_details** (1-2 complete sentences): Notable technical details, limitations, caveats, or additional context worth knowing. Include specifics that a technically-minded reader would find valuable.
 
-4. **background** (2-4 sentences): Brief background knowledge that helps a reader understand the context. Explain relevant institutions, indicators, policies, market mechanisms, financial terms, or prior developments assumed by the news.
+4. **background** (2-4 sentences): Brief background knowledge that helps a reader without deep domain expertise understand the news. Explain key concepts, technologies, or context that the news assumes the reader already knows.
 
 5. **community_discussion** (1-3 sentences): If community comments are provided, summarize the overall sentiment and key viewpoints from the discussion — agreements, disagreements, concerns, additional insights, or notable counterarguments. If no comments are provided, return an empty string.
 
 **CRITICAL — Language rules (MUST follow):**
 - All *_en fields MUST be written in English.
-- All *_zh fields MUST be written in Simplified Chinese (简体中文). 绝对不能用英文写 _zh 字段的内容。Only keep tickers, abbreviations, acronyms, and widely-used proper nouns (e.g. "Fed", "CPI", "ECB", "USD", "S&P 500", "PBOC") in their original English form; everything else must be Chinese.
+- All *_zh fields MUST be written in Simplified Chinese (简体中文). 绝对不能用英文写 _zh 字段的内容。Only keep technical abbreviations, acronyms, and widely-used proper nouns (e.g. "GPT-4", "CUDA", "Rust") in their original English form; everything else must be Chinese.
 
 Guidelines:
 - EVERY field (except community_discussion when no comments exist) must contain at least one complete sentence — no field may be empty or contain just a phrase
 - Base your explanation on the provided content and web search results — do NOT fabricate information
 - ONLY explain concepts and terms that are explicitly mentioned in the title, summary, or content
-- Use the web search results to ensure accuracy, especially for recent events, companies, institutions, policies, or data releases
+- Use the web search results to ensure accuracy, especially for recent projects, tools, or events
 - If the news is self-explanatory and needs no background, return an empty string for both background fields
-- Focus on practical significance for markets, companies, sectors, macro expectations, regulation, and investor sentiment
 - For **sources**: pick 1-3 URLs from the Web Search Results that you actually relied on for the background fields. Only use URLs that appear verbatim in the search results above — do not invent or modify URLs.
 """
 

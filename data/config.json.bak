@@ -15,34 +15,34 @@
   "sources": {
     "github": [],
     "hackernews": {
-      "enabled": false,
+      "enabled": true,
       "fetch_top_stories": 35,
       "min_score": 100
     },
     "rss": [
       {
-        "name": "Reuters Business",
-        "url": "https://feeds.reuters.com/reuters/businessNews",
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
         "enabled": true,
-        "category": "finance"
+        "category": "ai"
       },
       {
-        "name": "Reuters Wealth",
-        "url": "https://feeds.reuters.com/news/wealth",
+        "name": "OpenAI Blog",
+        "url": "https://openai.com/blog/rss.xml",
         "enabled": true,
-        "category": "finance"
+        "category": "ai"
       },
       {
-        "name": "CNBC Top News",
-        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+        "name": "Google DeepMind Blog",
+        "url": "https://deepmind.google/blog/rss.xml",
         "enabled": true,
-        "category": "finance"
+        "category": "ai"
       },
       {
-        "name": "Federal Reserve Press Releases",
-        "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+        "name": "Latent Space",
+        "url": "https://www.latent.space/feed",
         "enabled": true,
-        "category": "macro"
+        "category": "ai"
       }
     ],
     "reddit": {
@@ -58,7 +58,7 @@
     "twitter": null
   },
   "filtering": {
-    "ai_score_threshold": 5.0,
+    "ai_score_threshold": 8.0,
     "time_window_hours": 24
   },
   "email": null,
