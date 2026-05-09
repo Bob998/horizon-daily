@@ -15,32 +15,20 @@
   "sources": {
     "github": [],
     "hackernews": {
-      "enabled": false,
-      "fetch_top_stories": 35,
-      "min_score": 100
+      "enabled": true,
+      "fetch_top_stories": 50,
+      "min_score": 80
     },
     "rss": [
       {
-        "name": "Reuters Business",
-        "url": "https://feeds.reuters.com/reuters/businessNews",
-        "enabled": true,
-        "category": "finance"
-      },
-      {
-        "name": "Reuters Wealth",
-        "url": "https://feeds.reuters.com/news/wealth",
-        "enabled": true,
-        "category": "finance"
-      },
-      {
-        "name": "CNBC Top News",
-        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
-        "enabled": true,
-        "category": "finance"
-      },
-      {
         "name": "Federal Reserve Press Releases",
         "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+        "enabled": true,
+        "category": "macro"
+      },
+      {
+        "name": "FOMC",
+        "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
         "enabled": true,
         "category": "macro"
       }
@@ -58,7 +46,7 @@
     "twitter": null
   },
   "filtering": {
-    "ai_score_threshold": 5.0,
+    "ai_score_threshold": 3.0,
     "time_window_hours": 24
   },
   "email": null,
