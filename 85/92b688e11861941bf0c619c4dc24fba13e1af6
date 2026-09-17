@@ -1,0 +1,15 @@
+docs/_posts/2026-09-17-summary-zh.md
+  h_f973ca68e14391 1-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8592b688e11861941bf0c619c4dc24fba13e1af6",
+  "prompts": {},
+  "logical_commit_id": "8592b688e11861941bf0c619c4dc24fba13e1af6",
+  "humans": {
+    "h_f973ca68e14391": {
+      "author": "ganjunbao <ganjunbao@bigo.sg>"
+    }
+  }
+}
